@@ -1,4 +1,4 @@
-﻿@model InetMarket.Models.Brand
+﻿@model InetMarket.Models.FilterAddititon
 
 <div class="modal-content">
     <div class="modal-header">
@@ -6,9 +6,9 @@
         <h4>Удаление</h4>
     </div>
     <div class="modal-body">
-        <h3>Хотите удалить марку?</h3>
+        <h3>Хотите удалить?</h3>
         <div>
-            <h4>Марка авто</h4>
+            <h4>Дополнительный фильтр</h4>
             <hr />
             <dl class="dl-horizontal">
                 <dt>
@@ -17,11 +17,17 @@
                 <dd>
                     @Html.DisplayFor(model => model.Title)
                 </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.FilterId)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.FilterId)
+                </dd>
             </dl>
 
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
-                <input type="submit" value="Удалить" class="btn btn-default" /> 
+                <input type="submit" value="Удалить" class="btn btn-default" />
             </form>
         </div>
     </div>

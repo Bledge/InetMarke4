@@ -20,47 +20,54 @@ namespace InetMarket.Controllers
 
         public IActionResult Index(int? categoryId)
         {
-            var prodsCateg = _context.Products.Include(p => p.Category);
-            var prodsBrand = _context.Products.Include(p => p.Brand);
-            var prodsProvid = _context.Products.Include(p => p.Provider);
-            IQueryable<Product> products = _context.Products.Include(p => p.Category);
+            IQueryable<Product> productsCateg = _context.Products.Include(p => p.Category);
             if (categoryId != null && categoryId != 0)
             {
-                products = products.Where(p => p.CategoryId == categoryId);
+                productsCateg = productsCateg.Where(p => p.CategoryId == categoryId);
             }
-
             List<Category> categories = _context.Categories.ToList();
+            List<Brand> brands = _context.Brands.ToList();
+            List<Provider> providers = _context.Providers.ToList();
             // устанавливаем начальный элемент, который позволит выбрать всех
             categories.Insert(0, new Category { Title = "All", Id = 0 });
-
             ProductListView plv = new ProductListView
             {
-                Products = products.ToList(),
                 Categories = new SelectList(categories, "Id", "Title"),
+                Products = productsCateg.ToList(),
             };
             return View(plv);
         }
 
-        // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet]
+        public PartialViewResult CategorySearch(int? categoryId)
         {
-            if (id == null)
+            IQueryable<Product> productsCateg = _context.Products.Include(p => p.Category);
+            if (categoryId != null && categoryId != 0)
             {
-                return NotFound();
+                productsCateg = productsCateg.Where(p => p.CategoryId == categoryId);
             }
-
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            List<Category> categories = _context.Categories.ToList();
+            List<Brand> brands = _context.Brands.ToList();
+            List<Provider> providers = _context.Providers.ToList();
+            ProductListView plv = new ProductListView
             {
-                return NotFound();
-            }
+                Products = productsCateg.ToList(),
+            };
+            return PartialView(plv);
+        }
 
-            return View(product);
+        // GET: Products/Details/5
+        public PartialViewResult Details(int? id)
+        {
+            List<Category> categories = _context.Categories.ToList();
+            List<Brand> brands = _context.Brands.ToList();
+            List<Provider> providers = _context.Providers.ToList();
+            Product product = _context.Products.Find(id);
+            return PartialView(product);
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public PartialViewResult Create()
         {
             SelectList categories = new SelectList(_context.Categories, "Id", "Title");
             ViewBag.Categories = categories;
@@ -71,7 +78,7 @@ namespace InetMarket.Controllers
             SelectList providers = new SelectList(_context.Providers, "Id", "Title");
             ViewBag.Providers = providers;
 
-            return View();
+            return PartialView();
         }
 
         // POST: Products/Create
@@ -79,7 +86,7 @@ namespace InetMarket.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,MainImage,IsDiscount,IsMane,CategoryId,Price,BrandId")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,MainImage,IsDiscount,IsMane,CategoryId,Price,BrandId,ProviderId")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -91,19 +98,8 @@ namespace InetMarket.Controllers
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public PartialViewResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
             SelectList categories = new SelectList(_context.Categories, "Id", "Title");
             ViewBag.Categories = categories;
 
@@ -113,7 +109,8 @@ namespace InetMarket.Controllers
             SelectList providers = new SelectList(_context.Providers, "Id", "Title");
             ViewBag.Providers = providers;
 
-            return View(product);
+            Product product = _context.Products.Find(id);
+            return PartialView(product);
         }
 
         // POST: Products/Edit/5
@@ -121,7 +118,7 @@ namespace InetMarket.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,MainImage,IsDiscount,IsMane,CategoryId,Price,BrandId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,MainImage,IsDiscount,IsMane,CategoryId,Price,BrandId,ProviderId")] Product product)
         {
             if (id != product.Id)
             {
@@ -152,21 +149,10 @@ namespace InetMarket.Controllers
         }
 
         // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public PartialViewResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
+            Product product = _context.Products.Find(id);
+            return PartialView(product);
         }
 
         // POST: Products/Delete/5
